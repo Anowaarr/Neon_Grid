@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEON_GRID // Terminal_Checkout</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 font-mono overflow-x-hidden pt-28">
+
+    <header class="fixed top-0 left-0 w-full z-40 bg-slate-950/80 backdrop-blur-md border-b border-cyan-500/20">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500">
+                NEON<span class="text-cyan-400">_GRID</span>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm tracking-wider uppercase">
+                <a href="index.html" class="hover:text-cyan-400">// Home</a>
+                <a href="index.html#holograms" class="hover:text-cyan-400">// Hardware</a>
+                <a href="checkout.html" class="text-cyan-400">// Terminal_Checkout</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-6">
+        <div class="mb-12 border-b border-slate-900 pb-4">
+            <h2 class="text-2xl font-black tracking-widest uppercase text-cyan-400">// SECURE_TRANSACTION_GATEWAY</h2>
+            <p class="text-slate-500 text-xs mt-1">Verify dynamic modules prior to network verification signatures.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="md:col-span-2 space-y-6">
+                <div class="bg-slate-900/30 p-6 border border-slate-800 rounded-xl space-y-4">
+                    <h3 class="text-sm font-bold tracking-wider text-pink-500 uppercase">// 01. Transfer_Identity</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" placeholder="NET_ALIAS" class="bg-slate-950 border border-slate-800 p-3 text-xs text-slate-300 rounded focus:border-cyan-400 focus:outline-none">
+                        <input type="email" placeholder="COMMS_ADDRESS" class="bg-slate-950 border border-slate-800 p-3 text-xs text-slate-300 rounded focus:border-cyan-400 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/30 p-6 border border-slate-800 rounded-xl space-y-4">
+                    <h3 class="text-sm font-bold tracking-wider text-pink-500 uppercase">// 02. Node_Routing_Destination</h3>
+                    <input type="text" placeholder="PHYSICAL_DROP_SECTOR_STREET" class="w-full bg-slate-950 border border-slate-800 p-3 text-xs text-slate-300 rounded focus:border-cyan-400 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="bg-slate-900/60 p-6 border border-cyan-500/20 rounded-xl h-fit space-y-6">
+                <h3 class="text-sm font-bold tracking-wider uppercase text-cyan-400">// Invoice_Manifest</h3>
+                
+                <div id="checkout-manifest" class="space-y-3 text-xs text-slate-400">
+                    <p class="text-slate-600 italic">No persistent local data found.</p>
+                </div>
+
+                <div class="border-t border-slate-800 pt-4 flex justify-between text-sm font-bold">
+                    <span>NET TOTAL:</span>
+                    <span id="checkout-total" class="text-pink-500">$0.00</span>
+                </div>
+
+                <button onclick="executePurchase()" class="w-full py-3 bg-cyan-500 text-slate-950 font-black text-xs uppercase tracking-widest rounded hover:bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all cursor-pointer">
+                    Authorize Protocol
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        // Load operational parameters from session storage structure on boot
+        document.addEventListener("DOMContentLoaded", () => {
+            const storageCart = localStorage.getItem('neon_grid_cart');
+            if (storageCart) {
+                cart = JSON.parse(storageCart);
+                renderCheckoutManifest();
+            }
+        });
+
+        function renderCheckoutManifest() {
+            const container = document.getElementById('checkout-manifest');
+            const totalContainer = document.getElementById('checkout-total');
+            
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-slate-600 italic">Manifest holds 0 instances.</p>`;
+                totalContainer.innerText = "$0.00";
+                return;
+            }
+
+            container.innerHTML = cart.map(item => `
+                <div class="flex justify-between border-b border-slate-900 pb-2">
+                    <span>${item.name} (x${item.quantity})</span>
+                    <span class="font-mono text-cyan-400">$${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            totalContainer.innerText = `$${total.toFixed(2)}`;
+        }
+
+        function executePurchase() {
+            alert("CREDIT ROUTING AUTHORIZED. Shipments initiated via orbital drop nodes.");
+            localStorage.removeItem('neon_grid_cart');
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

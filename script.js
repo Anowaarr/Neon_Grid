@@ -50,10 +50,10 @@ const products = [
     }
 ];
 
-// App State Inventory 
-let cart = [];
+// Load existing cart from storage array if present
+let cart = JSON.parse(localStorage.getItem('neon_grid_cart')) || [];
 
-// DOM Elements
+// DOM Element Fallbacks
 const productGrid = document.getElementById('product-grid');
 const cartBtn = document.getElementById('cart-btn');
 const closeCart = document.getElementById('close-cart');
@@ -62,11 +62,13 @@ const cartItemsContainer = document.getElementById('cart-items');
 const cartCount = document.getElementById('cart-count');
 const cartTotal = document.getElementById('cart-total');
 
-// 1. Initialize & Render Electronics
+// 1. Initialize & Render Electronics Cards with View Spec routing
 function displayProducts() {
+    if(!productGrid) return; // Prevent breaking on other pages
+    
     productGrid.innerHTML = products.map(product => `
         <div class="product-card p-6 rounded-xl flex flex-col justify-between group">
-            <div>
+            <div class="cursor-pointer" onclick="window.location.href='product.html?id=${product.id}'">
                 <div class="flex justify-between items-start mb-6">
                     <span class="text-xs font-bold tracking-widest text-slate-500 uppercase">// ${product.category}</span>
                     <div class="w-12 h-12 rounded-lg bg-slate-900 flex items-center justify-center border border-slate-800 text-cyan-400 group-hover:text-pink-500 group-hover:border-pink-500/30 transition-all duration-300">
@@ -75,6 +77,7 @@ function displayProducts() {
                 </div>
                 <h3 class="text-lg font-bold tracking-wide group-hover:text-cyan-400 transition-colors">${product.name}</h3>
                 <p class="text-slate-400 text-xs mt-2 leading-relaxed">${product.desc}</p>
+                <span class="text-[10px] text-cyan-500/70 underline mt-2 inline-block">View System Specs -></span>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-800/60 flex items-center justify-between">
                 <span class="text-xl font-bold font-mono text-pink-500">$${product.price.toFixed(2)}</span>
@@ -86,7 +89,7 @@ function displayProducts() {
     `).join('');
 }
 
-// 2. Cart Logic Actions
+// 2. Cart Logic Processing
 function addToCart(id) {
     const product = products.find(p => p.id === id);
     const existingItem = cart.find(item => item.id === id);
@@ -105,15 +108,14 @@ function removeFromCart(id) {
 }
 
 function updateCart() {
-    // Total count update
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    cartCount.innerText = totalItems;
+    // Write array changes directly to browser memory cache
+    localStorage.setItem('neon_grid_cart', JSON.stringify(cart));
 
-    // Total cost math computation
-    const totalCost = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    cartTotal.innerText = `$${totalCost.toFixed(2)}`;
+    if(cartCount) cartCount.innerText = cart.reduce((sum, item) => sum + item.quantity, 0);
+    if(cartTotal) cartTotal.innerText = `$${cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}`;
 
-    // Render HTML inside the sidebar drawer container
+    if (!cartItemsContainer) return;
+
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = `<p class="text-slate-500 text-center py-8">Inventory empty. Awaiting data...</p>`;
         return;
@@ -135,11 +137,12 @@ function updateCart() {
     `).join('');
 }
 
-// 3. UI Toggle Mechanics
-cartBtn.addEventListener('click', () => cartSidebar.classList.remove('translate-x-full'));
-closeCart.addEventListener('click', () => cartSidebar.add('translate-x-full'));
+// 3. UI Toggle Mechanics Guard Clauses
+if (cartBtn && cartSidebar) cartBtn.addEventListener('click', () => cartSidebar.classList.remove('translate-x-full'));
+if (closeCart && cartSidebar) closeCart.addEventListener('click', () => cartSidebar.classList.add('translate-x-full'));
 
-// Self-initializing runtime execution loop
+// Self-initializing sequence execution loop
 document.addEventListener("DOMContentLoaded", () => {
     displayProducts();
+    updateCart();
 });
